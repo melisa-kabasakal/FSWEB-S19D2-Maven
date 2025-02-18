@@ -1,13 +1,15 @@
 package com.workintech.s18d4.controller;
 
+import com.workintech.s18d4.dto.AccountResponse;
 import com.workintech.s18d4.entity.Account;
 import com.workintech.s18d4.service.AccountService;
-import com.workintech.s18d4.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/accounts")
@@ -19,13 +21,21 @@ public class AccountController {
 
 
     @GetMapping
-    public List<Account> getAllAccounts(){
-        return accountService.findAll();
+    public List<AccountResponse> getAllAccounts(){
+        List<Account> accounts = accountService.findAll();
+        return accounts.stream()
+                .map(account -> new AccountResponse(account.getId(), account.getAccountName(), account.getMoneyAmount()))
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public Account getAccountById(@PathVariable Long id) {
-        return accountService.find(id);
+    public AccountResponse getAccountById(@PathVariable Long id) {
+        Account account = accountService.find(id);
+        if (account != null) {
+            return new AccountResponse(account.getId(), account.getAccountName(), account.getMoneyAmount());
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found");
+        }
     }
 
     @PutMapping("/{customerId}")
@@ -39,7 +49,7 @@ public class AccountController {
     public Account remove(@PathVariable Long id) {
         Account accountToDelete = accountService.find(id);
         accountService.delete(id);
-        return accountToDelete; // Return the account that was deleted
+        return accountToDelete;
     }
 
 }

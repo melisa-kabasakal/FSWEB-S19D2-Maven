@@ -111,12 +111,13 @@ class ControllerAndPropertiesTest {
     void testFindAllAccount() throws Exception {
         when(accountService.findAll()).thenReturn(List.of(sampleAccountForAccountControllerTest));
 
-        mockMvc.perform(get("/account"))
+        mockMvc.perform(get("/accounts"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].id", is((Long) sampleAccountForAccountControllerTest.getId())))
+                .andExpect(jsonPath("$[0].id", is(1)))
                 .andExpect(jsonPath("$[0].accountName", is(sampleAccountForAccountControllerTest.getAccountName())));
+
 
         verify(accountService).findAll();
     }
@@ -126,10 +127,10 @@ class ControllerAndPropertiesTest {
     void testFindAccount() throws Exception {
         when(accountService.find(sampleAccountForAccountControllerTest.getId())).thenReturn(sampleAccountForAccountControllerTest);
 
-        mockMvc.perform(get("/account/{id}", sampleAccountForAccountControllerTest.getId()))
+        mockMvc.perform(get("/accounts/{id}", sampleAccountForAccountControllerTest.getId()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id", is((Long) sampleAccountForAccountControllerTest.getId())))
+                .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.accountName", is(sampleAccountForAccountControllerTest.getAccountName())));
 
         verify(accountService).find(sampleAccountForAccountControllerTest.getId());
@@ -190,7 +191,7 @@ class ControllerAndPropertiesTest {
         when(accountService.find(sampleAccountForAccountControllerTest.getId())).thenReturn(sampleAccountForAccountControllerTest);
         when(accountService.delete(sampleAccountForAccountControllerTest.getId())).thenReturn(sampleAccountForAccountControllerTest);
 
-        mockMvc.perform(delete("/account/{id}", sampleAccountForAccountControllerTest.getId()))
+        mockMvc.perform(delete("/accounts/{id}", sampleAccountForAccountControllerTest.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is((Long) sampleAccountForAccountControllerTest.getId())))
                 .andExpect(jsonPath("$.accountName", is(sampleAccountForAccountControllerTest.getAccountName())))
@@ -207,7 +208,7 @@ class ControllerAndPropertiesTest {
 
         CustomerResponse expectedResponse = new CustomerResponse(sampleCustomerForCustomerControllerTest.getId(), sampleCustomerForCustomerControllerTest.getEmail(), sampleCustomerForCustomerControllerTest.getSalary());
 
-        mockMvc.perform(post("/customer")
+        mockMvc.perform(post("/customers")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(sampleCustomerForCustomerControllerTest)))
                 .andExpect(status().isOk())
